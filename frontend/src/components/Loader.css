@@ -1,0 +1,501 @@
+.loader-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+.loader-container.dark {
+  background: #000000;
+}
+
+.loader-container.light {
+  background: #ffffff;
+}
+
+/* Grid background */
+.grid-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  opacity: 0.3;
+}
+
+.grid-lines {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background-size: 50px 50px;
+}
+
+.dark .grid-lines {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+}
+
+.light .grid-lines {
+  background-image:
+    linear-gradient(to right, rgba(0, 0, 0, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.08) 1px, transparent 1px);
+}
+
+/* Wave animations */
+.waves {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.wave {
+  position: absolute;
+  width: 200%;
+  height: 100px;
+  opacity: 0.15;
+}
+
+.dark .wave {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  filter: blur(20px);
+}
+
+.light .wave {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 0, 0, 0.15),
+    transparent
+  );
+  filter: blur(20px);
+}
+
+/* Particles */
+.particles {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.particle {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+}
+
+.dark .particle {
+  background: rgba(255, 255, 255, 0.6);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.8),
+              0 0 30px rgba(255, 255, 255, 0.4);
+}
+
+.light .particle {
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.5),
+              0 0 30px rgba(0, 0, 0, 0.2);
+}
+
+/* Orbiting circles */
+.orbit-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.orbit {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid;
+}
+
+.dark .orbit {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.light .orbit {
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.orbit-dot {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+.dark .orbit-dot {
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+}
+
+.light .orbit-dot {
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Geometric shapes */
+.shapes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.shape {
+  position: absolute;
+  opacity: 0.15;
+}
+
+.shape-0 {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.dark .shape-0 {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.light .shape-0 {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.shape-1 {
+  width: 35px;
+  height: 35px;
+}
+
+.dark .shape-1 {
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.light .shape-1 {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.shape-2 {
+  width: 0;
+  height: 0;
+  border-left: 20px solid transparent;
+  border-right: 20px solid transparent;
+}
+
+.dark .shape-2 {
+  border-bottom: 35px solid rgba(255, 255, 255, 0.3);
+}
+
+.light .shape-2 {
+  border-bottom: 35px solid rgba(0, 0, 0, 0.2);
+}
+
+/* Moving lines */
+.lines-bg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  opacity: 0.15;
+}
+
+.dark .line {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.8),
+    rgba(255, 255, 255, 0.6),
+    transparent
+  );
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+}
+
+.light .line {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(0, 0, 0, 0.4),
+    rgba(0, 0, 0, 0.6),
+    rgba(0, 0, 0, 0.4),
+    transparent
+  );
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.loader-content {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.logo-wrapper {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.3));
+}
+
+.logo-circle {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+.dark .logo-circle {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  border: 3px solid rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 0 30px rgba(255, 255, 255, 0.3),
+    inset 0 0 30px rgba(255, 255, 255, 0.1);
+}
+
+.light .logo-circle {
+  background: linear-gradient(135deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.03));
+  border: 3px solid rgba(0, 0, 0, 0.15);
+  box-shadow:
+    0 0 30px rgba(0, 0, 0, 0.2),
+    inset 0 0 30px rgba(0, 0, 0, 0.05);
+}
+
+.loader-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.text-wrapper {
+  text-align: center;
+}
+
+.company-name {
+  font-size: 3.5rem;
+  font-weight: 700;
+  letter-spacing: -1px;
+  margin: 0;
+  display: flex;
+  gap: 4px;
+}
+
+.dark .company-name {
+  color: #ffffff;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+}
+
+.light .company-name {
+  color: #000000;
+  text-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+}
+
+.company-name span {
+  display: inline-block;
+}
+
+.tagline {
+  font-size: 0.875rem;
+  margin: 10px 0 0 0;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.dark .tagline {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.light .tagline {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.loading-bar-container {
+  height: 3px;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.dark .loading-bar-container {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.light .loading-bar-container {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.loading-bar {
+  height: 100%;
+  border-radius: 2px;
+}
+
+.dark .loading-bar {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.5),
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0.5)
+  );
+}
+
+.light .loading-bar {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.5),
+    rgba(0, 0, 0, 0.9),
+    rgba(0, 0, 0, 0.5)
+  );
+}
+
+.ripple {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.dark .ripple {
+  border: 3px solid rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 0 20px rgba(255, 255, 255, 0.3),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+}
+
+.light .ripple {
+  border: 3px solid rgba(0, 0, 0, 0.3);
+  box-shadow:
+    0 0 20px rgba(0, 0, 0, 0.2),
+    inset 0 0 20px rgba(0, 0, 0, 0.05);
+}
+
+/* Glowing center point */
+.glow-center {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.dark .glow-center {
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.2) 0%,
+    rgba(255, 255, 255, 0.1) 30%,
+    transparent 70%
+  );
+  box-shadow: 0 0 60px rgba(255, 255, 255, 0.3);
+}
+
+.light .glow-center {
+  background: radial-gradient(
+    circle,
+    rgba(0, 0, 0, 0.15) 0%,
+    rgba(0, 0, 0, 0.08) 30%,
+    transparent 70%
+  );
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.2);
+}
+
+/* Scanning line effect */
+.scan-line {
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.dark .scan-line {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.8),
+    transparent
+  );
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+}
+
+.light .scan-line {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 0, 0, 0.5),
+    transparent
+  );
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+@media (max-width: 768px) {
+  .company-name {
+    font-size: 2.5rem;
+  }
+
+  .logo-wrapper {
+    width: 100px;
+    height: 100px;
+  }
+
+  .logo-circle {
+    width: 100px;
+    height: 100px;
+    padding: 15px;
+  }
+
+  .tagline {
+    font-size: 0.75rem;
+  }
+
+  .loading-bar-container {
+    width: 200px !important;
+  }
+
+  .particle {
+    width: 2px;
+    height: 2px;
+  }
+
+  .shape {
+    transform: scale(0.7);
+  }
+}
