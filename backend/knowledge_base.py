@@ -1,8 +1,6 @@
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from sqlalchemy.orm import Session
 from database.models import Document, get_db
-from rag.document_processor import DocumentProcessor
-from rag.vector_store import VectorStore
 from pathlib import Path
 from datetime import datetime
 import shutil
@@ -18,8 +16,22 @@ UPLOAD_DIR.mkdir(exist_ok=True)
 
 ALLOWED_TYPES = ["policy", "compliance", "basic", "finance", "contract", "hr", "technical"]
 
-document_processor = DocumentProcessor()
-vector_store = VectorStore()
+_document_processor = None
+_vector_store = None
+
+def get_document_processor():
+    global _document_processor
+    if _document_processor is None:
+        from rag.document_processor import DocumentProcessor
+        _document_processor = DocumentProcessor()
+    return _document_processor
+
+def get_vector_store_instance():
+    global _vector_store
+    if _vector_store is None:
+        from rag.vector_store import VectorStore
+        _vector_store = VectorStore()
+    return _vector_store
 
 @router.post("/upload")
 async def upload_document(
@@ -85,9 +97,11 @@ async def process_document(document_id: int, db: Session = Depends(get_db)):
         
         if doc.processed:
             raise HTTPException(400, "Document already processed")
-        
+
+        document_processor = get_document_processor()
         result = document_processor.process_document(doc.file_path)
-        
+
+        vector_store = get_vector_store_instance()
         vector_store.add_document(
             document_id=str(doc.id),
             chunks=result['chunks'],
@@ -147,6 +161,7 @@ async def delete_document(document_id: int, db: Session = Depends(get_db)):
             raise HTTPException(404, "Document not found")
         
         if doc.processed:
+            vector_store = get_vector_store_instance()
             vector_store.delete_document(str(doc.id))
         
         file_path = Path(doc.file_path)
