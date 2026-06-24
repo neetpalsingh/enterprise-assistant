@@ -1,11 +1,12 @@
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends, BackgroundTasks
 from sqlalchemy.orm import Session
 from database.models import Document, get_db
 from pathlib import Path
-from datetime import datetime
+from datetime import datetime, timezone
 import shutil
 import uuid
 import logging
+import asyncio
 
 logger = logging.getLogger(__name__)
 
@@ -88,48 +89,123 @@ async def upload_document(
         logger.error(f"Upload error: {e}")
         raise HTTPException(500, f"Upload failed: {str(e)}")
 
-@router.post("/process/{document_id}")
-async def process_document(document_id: int, db: Session = Depends(get_db)):
+def _process_document_task(document_id: int):
+    from database.models import SessionLocal
+    db = SessionLocal()
+
     try:
         doc = db.query(Document).filter(Document.id == document_id).first()
         if not doc:
-            raise HTTPException(404, "Document not found")
-        
-        if doc.processed:
-            raise HTTPException(400, "Document already processed")
+            logger.error(f"Document {document_id} not found")
+            return
 
-        document_processor = get_document_processor()
-        result = document_processor.process_document(doc.file_path)
+        doc.status = "processing"
+        db.commit()
 
-        vector_store = get_vector_store_instance()
-        vector_store.add_document(
-            document_id=str(doc.id),
-            chunks=result['chunks'],
-            metadata=result['metadata'],
-            document_type=doc.document_type
-        )
-        
+        try:
+            document_processor = get_document_processor()
+            result = document_processor.process_document(doc.file_path)
+        except MemoryError as e:
+            logger.error(f"Memory error processing document {document_id}: {e}")
+            doc.status = "failed"
+            doc.error_message = f"Memory Error: {str(e)}"
+            db.commit()
+            return
+        except ValueError as e:
+            logger.error(f"Validation error processing document {document_id}: {e}")
+            doc.status = "failed"
+            doc.error_message = str(e)
+            db.commit()
+            return
+        except Exception as e:
+            error_msg = str(e).lower()
+            logger.error(f"Document processing error for {document_id}: {e}")
+
+            if "bad_alloc" in error_msg or "memory" in error_msg:
+                doc.status = "failed"
+                doc.error_message = "Out of memory. Try a smaller file."
+            else:
+                doc.status = "failed"
+                doc.error_message = f"Processing failed: {str(e)}"
+
+            db.commit()
+            return
+
+        try:
+            vector_store = get_vector_store_instance()
+            vector_store.add_document(
+                document_id=str(doc.id),
+                chunks=result['chunks'],
+                metadata=result['metadata'],
+                document_type=doc.document_type
+            )
+        except ValueError as e:
+            error_msg = str(e)
+            logger.error(f"Vector store error for {document_id}: {e}")
+
+            if "OPENAI_API_KEY" in error_msg:
+                doc.status = "failed"
+                doc.error_message = "OpenAI API key not configured"
+            else:
+                doc.status = "failed"
+                doc.error_message = str(e)
+
+            db.commit()
+            return
+        except Exception as e:
+            error_msg = str(e)
+            logger.error(f"Vector store error for {document_id}: {e}")
+
+            if "api_key" in error_msg.lower() or "openai" in error_msg.lower():
+                doc.status = "failed"
+                doc.error_message = "OpenAI API key not configured. Check .env file and restart backend."
+            else:
+                doc.status = "failed"
+                doc.error_message = f"Vector store failed: {str(e)}"
+
+            db.commit()
+            return
+
         doc.processed = True
         doc.status = "processed"
         doc.num_chunks = len(result['chunks'])
-        doc.processed_at = datetime.utcnow()
-        
+        doc.processed_at = datetime.now(timezone.utc)
+
         db.commit()
-        db.refresh(doc)
-        
-        return {
-            "id": doc.id,
-            "file_name": doc.original_name,
-            "status": doc.status,
-            "chunks": doc.num_chunks,
-            "message": "Document processed and added to knowledge base"
-        }
-        
-    except HTTPException:
-        raise
+        logger.info(f"Document {document_id} processed successfully")
+
     except Exception as e:
-        logger.error(f"Processing error: {e}")
-        raise HTTPException(500, f"Processing failed: {str(e)}")
+        logger.error(f"Unexpected error processing document {document_id}: {e}")
+        if doc:
+            doc.status = "failed"
+            doc.error_message = str(e)
+            db.commit()
+    finally:
+        db.close()
+
+@router.post("/process/{document_id}")
+async def process_document(document_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    doc = db.query(Document).filter(Document.id == document_id).first()
+    if not doc:
+        raise HTTPException(404, "Document not found")
+
+    if doc.processed:
+        raise HTTPException(400, "Document already processed")
+
+    if doc.status == "processing":
+        raise HTTPException(400, "Document is already being processed")
+
+    doc.status = "processing"
+    db.commit()
+
+    background_tasks.add_task(_process_document_task, document_id)
+
+    return {
+        "id": doc.id,
+        "file_name": doc.original_name,
+        "status": "processing",
+        "message": "Document processing started in background. Check status endpoint for progress."
+    }
 
 @router.get("/documents")
 async def list_documents(db: Session = Depends(get_db)):
@@ -144,6 +220,7 @@ async def list_documents(db: Session = Depends(get_db)):
                 "processed": doc.processed,
                 "size": doc.file_size,
                 "chunks": doc.num_chunks,
+                "error_message": doc.error_message,
                 "uploaded_at": doc.uploaded_at.isoformat(),
                 "processed_at": doc.processed_at.isoformat() if doc.processed_at else None
             }

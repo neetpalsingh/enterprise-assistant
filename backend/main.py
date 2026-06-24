@@ -29,8 +29,15 @@ async def lifespan(app: FastAPI):
     global agent
     logger.info("Initializing database...")
     init_db()
+
+    try:
+        from database.migrate import migrate_add_error_message
+        migrate_add_error_message()
+    except Exception as e:
+        logger.warning(f"Migration warning: {e}")
+
     seed_demo_data()
-    
+
     logger.info(f"Initializing AI agent with {current_llm_provider} provider...")
     try:
         agent = EnterpriseAgent(llm_provider=current_llm_provider)
@@ -38,9 +45,9 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.error(f"Failed to initialize agent: {e}")
         raise
-    
+
     yield
-    
+
     logger.info("Shutting down...")
 
 app = FastAPI(

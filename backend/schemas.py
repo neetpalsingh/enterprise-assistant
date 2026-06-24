@@ -28,9 +28,6 @@ class AskRequest(BaseModel):
         if not stripped:
             raise ValueError("Question cannot be empty")
 
-        if len(stripped) < 3:
-            raise ValueError("Question must be at least 3 characters long")
-
         question_lower = stripped.lower()
 
         for pattern in BLOCKED_PATTERNS:

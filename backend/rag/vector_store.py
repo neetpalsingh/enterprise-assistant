@@ -16,11 +16,17 @@ class VectorStore:
                 allow_reset=True
             )
         )
-        
+
         self.collection_name = "enterprise_documents"
         self.collection = self._get_or_create_collection()
-        
-        self.openai_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            raise ValueError(
+                "OPENAI_API_KEY environment variable is required for RAG functionality. "
+                "Please set it in your .env file or environment."
+            )
+        self.openai_client = OpenAI(api_key=api_key)
     
     def _get_or_create_collection(self):
         try:

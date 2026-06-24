@@ -51,6 +51,7 @@ class Document(Base):
     status = Column(String, default="uploaded")
     processed = Column(Boolean, default=False)
     num_chunks = Column(Integer, default=0)
+    error_message = Column(Text, nullable=True)
     uploaded_at = Column(DateTime, default=datetime.utcnow)
     processed_at = Column(DateTime, nullable=True)
 
