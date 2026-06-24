@@ -5,33 +5,69 @@ from langgraph.prebuilt import ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 from agent.state import AgentState
 from tools.business_tools import get_all_tools
-from rag.rag_tool import get_rag_tool
 from llm.models import LLMFactory
+import logging
 
-SYSTEM_PROMPT = """You are an enterprise AI assistant designed to help with business operations.
+logger = logging.getLogger(__name__)
+
+try:
+    from rag.rag_tool import get_rag_tool
+    RAG_AVAILABLE = True
+except ImportError as e:
+    logger.warning(f"RAG dependencies not installed: {e}")
+    RAG_AVAILABLE = False
+except Exception as e:
+    logger.warning(f"RAG initialization failed: {e}")
+    RAG_AVAILABLE = False
+
+def get_system_prompt():
+    base_prompt = """You are an enterprise AI assistant designed to help with business operations.
 
 You have access to the following capabilities:
 - Create support tickets for issues and requests
 - Fetch employee information and list employees by department
 - Check ticket status and list open tickets
-- Generate business reports (employee summaries, ticket summaries)
-- Search knowledge base for policies, compliance, procedures, and documented information
+- Generate business reports (employee summaries, ticket summaries)"""
+
+    if RAG_AVAILABLE:
+        base_prompt += "\n- Search knowledge base for policies, compliance, procedures, and documented information"
+
+    base_prompt += """
 
 When a user asks a question:
 1. Understand their intent
-2. For questions about policies, compliance, procedures, or documented information, use the knowledge base search tool
-3. Use appropriate tools to gather information or perform actions
-4. Provide clear, professional responses with source citations when using knowledge base
-5. If you need to create a ticket or perform an action, confirm what you're doing
+2. Use appropriate tools to gather information or perform actions
+3. Provide clear, professional responses"""
 
-Be helpful, concise, and professional. Always use tools when appropriate rather than making up information.
-When citing knowledge base sources, always mention the source file names.
-"""
+    if RAG_AVAILABLE:
+        base_prompt += " with source citations when using knowledge base"
+
+    base_prompt += """
+4. If you need to create a ticket or perform an action, confirm what you're doing
+
+Be helpful, concise, and professional. Always use tools when appropriate rather than making up information."""
+
+    if RAG_AVAILABLE:
+        base_prompt += "\nWhen citing knowledge base sources, always mention the source file names."
+
+    return base_prompt
+
+SYSTEM_PROMPT = get_system_prompt()
 
 class EnterpriseAgent:
     def __init__(self, llm_provider: str = "openai", model_name: str = None):
         self.llm = LLMFactory.create_llm(provider=llm_provider, model_name=model_name)
-        self.tools = get_all_tools() + [get_rag_tool()]
+        self.tools = get_all_tools()
+
+        if RAG_AVAILABLE:
+            try:
+                self.tools.append(get_rag_tool())
+                logger.info("RAG tool enabled")
+            except Exception as e:
+                logger.warning(f"Failed to add RAG tool: {e}")
+        else:
+            logger.info("RAG tool disabled (dependencies not installed)")
+
         self.llm_with_tools = self.llm.bind_tools(self.tools)
         self.memory = MemorySaver()
         self.graph = self._create_graph()

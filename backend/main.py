@@ -9,7 +9,14 @@ from database.models import init_db
 from database.seed import seed_demo_data
 from llm.models import LLMFactory
 from config import settings
-from knowledge_base import router as knowledge_router
+
+try:
+    from knowledge_base import router as knowledge_router
+    KNOWLEDGE_BASE_AVAILABLE = True
+except ImportError as e:
+    logger = logging.getLogger(__name__)
+    logger.warning(f"Knowledge base dependencies not installed: {e}")
+    KNOWLEDGE_BASE_AVAILABLE = False
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -51,7 +58,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(knowledge_router)
+if KNOWLEDGE_BASE_AVAILABLE:
+    app.include_router(knowledge_router)
+    logger.info("Knowledge base endpoints enabled")
+else:
+    logger.info("Knowledge base endpoints disabled (dependencies not installed)")
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):

@@ -1,12 +1,18 @@
 from typing import Dict, Optional
 from langchain_core.tools import tool
-from .vector_store import VectorStore
 import logging
 import re
 
 logger = logging.getLogger(__name__)
 
-vector_store = VectorStore()
+_vector_store = None
+
+def get_vector_store():
+    global _vector_store
+    if _vector_store is None:
+        from .vector_store import VectorStore
+        _vector_store = VectorStore()
+    return _vector_store
 
 def needs_knowledge_base(question: str) -> bool:
     knowledge_keywords = [
@@ -39,19 +45,20 @@ def search_knowledge_base(question: str) -> str:
     """
     Search the knowledge base for relevant information from uploaded documents.
     Use this when the question is about policies, compliance, procedures, or any documented information.
-    
+
     Args:
         question: The user's question
-    
+
     Returns:
         Relevant information from documents with source citations
     """
     try:
         if not needs_knowledge_base(question):
             return "This question doesn't require knowledge base search."
-        
+
         document_type = detect_document_type(question)
-        
+
+        vector_store = get_vector_store()
         results = vector_store.query(
             query_text=question,
             document_type=document_type,
