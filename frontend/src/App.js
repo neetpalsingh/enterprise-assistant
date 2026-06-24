@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import ChatInterface from './components/ChatInterface';
 import DataViewer from './components/DataViewer';
+import KnowledgeBase from './components/KnowledgeBase';
 import Loader from './components/Loader';
 import './App.css';
 
 function App() {
   const [theme, setTheme] = useState('dark');
-  const [showData, setShowData] = useState(false);
+  const [currentView, setCurrentView] = useState('chat');
   const [loading, setLoading] = useState(true);
   const [chatMessages, setChatMessages] = useState([]);
   const [sessionId, setSessionId] = useState(`session_${Date.now()}`);
@@ -30,17 +31,23 @@ function App() {
 
   return (
     <div className={`app ${theme}`}>
-      {showData ? (
+      {currentView === 'data' ? (
         <DataViewer
           theme={theme}
           toggleTheme={toggleTheme}
-          onClose={() => setShowData(false)}
+          onClose={() => setCurrentView('chat')}
+        />
+      ) : currentView === 'knowledge' ? (
+        <KnowledgeBase
+          theme={theme}
+          onClose={() => setCurrentView('chat')}
         />
       ) : (
         <ChatInterface
           theme={theme}
           toggleTheme={toggleTheme}
-          onShowData={() => setShowData(true)}
+          onShowData={() => setCurrentView('data')}
+          onShowKnowledge={() => setCurrentView('knowledge')}
           messages={chatMessages}
           setMessages={setChatMessages}
           sessionId={sessionId}

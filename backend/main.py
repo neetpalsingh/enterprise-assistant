@@ -9,6 +9,7 @@ from database.models import init_db
 from database.seed import seed_demo_data
 from llm.models import LLMFactory
 from config import settings
+from knowledge_base import router as knowledge_router
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -49,6 +50,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(knowledge_router)
 
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request: Request, exc: HTTPException):

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Float, Text, create_engine
+from sqlalchemy import Column, Integer, String, DateTime, Float, Text, Boolean, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
@@ -38,6 +38,21 @@ class Report(Base):
     content = Column(Text, nullable=False)
     generated_by = Column(String, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
+
+class Document(Base):
+    __tablename__ = "documents"
+
+    id = Column(Integer, primary_key=True, index=True)
+    file_name = Column(String, nullable=False)
+    original_name = Column(String, nullable=False)
+    file_path = Column(String, nullable=False)
+    file_size = Column(Integer, nullable=False)
+    document_type = Column(String, nullable=False)
+    status = Column(String, default="uploaded")
+    processed = Column(Boolean, default=False)
+    num_chunks = Column(Integer, default=0)
+    uploaded_at = Column(DateTime, default=datetime.utcnow)
+    processed_at = Column(DateTime, nullable=True)
 
 engine = create_engine(settings.database_url, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

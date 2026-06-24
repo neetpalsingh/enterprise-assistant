@@ -5,6 +5,7 @@ from langgraph.prebuilt import ToolNode
 from langgraph.checkpoint.memory import MemorySaver
 from agent.state import AgentState
 from tools.business_tools import get_all_tools
+from rag.rag_tool import get_rag_tool
 from llm.models import LLMFactory
 
 SYSTEM_PROMPT = """You are an enterprise AI assistant designed to help with business operations.
@@ -14,20 +15,23 @@ You have access to the following capabilities:
 - Fetch employee information and list employees by department
 - Check ticket status and list open tickets
 - Generate business reports (employee summaries, ticket summaries)
+- Search knowledge base for policies, compliance, procedures, and documented information
 
 When a user asks a question:
 1. Understand their intent
-2. Use appropriate tools to gather information or perform actions
-3. Provide clear, professional responses
-4. If you need to create a ticket or perform an action, confirm what you're doing
+2. For questions about policies, compliance, procedures, or documented information, use the knowledge base search tool
+3. Use appropriate tools to gather information or perform actions
+4. Provide clear, professional responses with source citations when using knowledge base
+5. If you need to create a ticket or perform an action, confirm what you're doing
 
 Be helpful, concise, and professional. Always use tools when appropriate rather than making up information.
+When citing knowledge base sources, always mention the source file names.
 """
 
 class EnterpriseAgent:
     def __init__(self, llm_provider: str = "openai", model_name: str = None):
         self.llm = LLMFactory.create_llm(provider=llm_provider, model_name=model_name)
-        self.tools = get_all_tools()
+        self.tools = get_all_tools() + [get_rag_tool()]
         self.llm_with_tools = self.llm.bind_tools(self.tools)
         self.memory = MemorySaver()
         self.graph = self._create_graph()

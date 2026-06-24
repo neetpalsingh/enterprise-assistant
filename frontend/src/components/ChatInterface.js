@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Sun, Moon, Database, MessageSquare, Trash2 } from 'lucide-react';
+import { Send, Sun, Moon, Database, MessageSquare, Trash2, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import './ChatInterface.css';
 
-const ChatInterface = ({ theme, toggleTheme, onShowData, messages, setMessages, sessionId, onClearChat }) => {
+const ChatInterface = ({ theme, toggleTheme, onShowData, onShowKnowledge, messages, setMessages, sessionId, onClearChat }) => {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -81,6 +81,9 @@ const ChatInterface = ({ theme, toggleTheme, onShowData, messages, setMessages, 
         <div className="header-actions">
           <button onClick={clearChat} className="icon-btn" title="Clear Chat & Start New Session">
             <Trash2 size={20} />
+          </button>
+          <button onClick={onShowKnowledge} className="icon-btn" title="Knowledge Base">
+            <BookOpen size={20} />
           </button>
           <button onClick={onShowData} className="icon-btn" title="View Database">
             <Database size={20} />
