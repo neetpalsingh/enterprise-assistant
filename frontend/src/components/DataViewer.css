@@ -1,0 +1,250 @@
+.data-viewer {
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.data-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  border-radius: 20px;
+  padding: 30px;
+  min-height: calc(100vh - 40px);
+  display: flex;
+  flex-direction: column;
+}
+
+.data-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.data-header .header-left {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.dark .data-header h1 {
+  color: #ffffff;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.light .data-header h1 {
+  color: #000000;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.dark .data-header .header-left svg {
+  color: #ffffff;
+}
+
+.light .data-header .header-left svg {
+  color: #000000;
+}
+
+.data-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 30px;
+  padding-bottom: 10px;
+}
+
+.dark .data-tabs {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.light .data-tabs {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.tab {
+  background: transparent;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.813rem;
+  font-weight: 500;
+}
+
+.dark .tab {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.light .tab {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.dark .tab.active {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+}
+
+.light .tab.active {
+  background: rgba(0, 0, 0, 0.05);
+  color: #000000;
+}
+
+.dark .tab:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.light .tab:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.data-content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+}
+
+.data-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.dark .data-table thead {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.light .data-table thead {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.data-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.688rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dark .data-table th {
+  color: rgba(255, 255, 255, 0.9);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.light .data-table th {
+  color: rgba(0, 0, 0, 0.9);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.data-table td {
+  padding: 14px 16px;
+  font-size: 0.75rem;
+}
+
+.dark .data-table td {
+  color: rgba(255, 255, 255, 0.8);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.light .data-table td {
+  color: rgba(0, 0, 0, 0.8);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.data-table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.dark .data-table tbody tr:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.light .data-table tbody tr:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.salary {
+  font-weight: 600;
+}
+
+.dark .salary {
+  color: #ffffff;
+}
+
+.light .salary {
+  color: #000000;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-weight: 500;
+  border: 1px solid;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.dark .badge {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.light .badge {
+  background: rgba(0, 0, 0, 0.05);
+  color: #000000;
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+.status {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 0.625rem;
+  font-weight: 500;
+  border: 1px solid;
+  text-transform: capitalize;
+}
+
+.dark .status {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.light .status {
+  background: rgba(0, 0, 0, 0.05);
+  color: #000000;
+  border-color: rgba(0, 0, 0, 0.15);
+}
+
+
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
